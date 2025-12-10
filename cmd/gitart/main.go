@@ -30,7 +30,7 @@ func main() {
 	2. Set the remote for the local repository
 	3. Push the commits
 	   
-	   gh repo create <your_username>/gitart-` + time.Now().Format("2006-01-02") + ` --public --confirm
+	   gh repo create <your_username>/gitart-` + time.Now().Format("2006-01-02") + ` --public
 	   cd art
 	   git remote add origin <github_repo_url>
 	   git branch -M main

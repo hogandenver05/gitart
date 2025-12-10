@@ -23,7 +23,7 @@ func PromptOptions(options *Options) *Options {
 	}
 
 	if options.StartDate.IsZero() {
-		fmt.Print("Enter start date (top-left corner of the artwork): ")
+		fmt.Print("Enter start date YYYY-MM-DD (top-left corner of the artwork): ")
 		startDateString, _ := reader.ReadString('\n')
 		startDateString = strings.TrimSpace(startDateString)
 		startDate, err := time.Parse("2006-01-02", startDateString)
