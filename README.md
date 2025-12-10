@@ -1,4 +1,5 @@
-# gitart
+
+<img width="1404" alt="gitart" src="https://github.com/user-attachments/assets/b5297f1b-6395-48c5-bc80-ce6008a5157a" />
 
 Gitart is a command line tool that creates custom artwork on your GitHub contribution graph. You provide a message and the tool generates a series of commits inside a nested repository so the design appears on your profile.
 
