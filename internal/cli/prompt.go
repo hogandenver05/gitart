@@ -9,15 +9,14 @@ import (
 	"time"
 )
 
-func PromptOptions(options *Options) *Options {
+func PromptOptions(options *Options) (*Options, error) {
 	reader := bufio.NewReader(os.Stdin)
 
 	if options.Message == "" {
 		fmt.Print("Enter your message: ")
 		message, _ := reader.ReadString('\n')
 		if message == "" {
-			fmt.Println("Message cannot be empty. Exiting now.")
-			os.Exit(1)
+			return nil, fmt.Errorf("message cannot be empty")
 		}
 		options.Message = strings.TrimSpace(message)
 	}
@@ -28,8 +27,7 @@ func PromptOptions(options *Options) *Options {
 		startDateString = strings.TrimSpace(startDateString)
 		startDate, err := time.Parse("2006-01-02", startDateString)
 		if err != nil {
-			fmt.Println("Invalid start date format. Use YYYY-MM-DD. Exiting now.")
-			os.Exit(1)
+			return nil, fmt.Errorf("invalid start date format, use YYYY-MM-DD")
 		}
 		options.StartDate = startDate
 	}
@@ -40,8 +38,7 @@ func PromptOptions(options *Options) *Options {
 		targetString = strings.TrimSpace(targetString)
 		target, err := strconv.Atoi(targetString)
 		if err != nil || target <= 0 {
-			fmt.Println("Invalid number. Must be greater than 0. Exiting now.")
-			os.Exit(1)
+			return nil, fmt.Errorf("invalid number, must be greater than 0")
 		}
 		options.Target = target
 	}
@@ -50,5 +47,7 @@ func PromptOptions(options *Options) *Options {
 		options.ArtPath = "art"
 	}
 
-	return options
+	fmt.Println("Working...")
+
+	return options, nil
 }

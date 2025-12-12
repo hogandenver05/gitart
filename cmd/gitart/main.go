@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/hogandenver05/gitart/internal/app"
 	"github.com/hogandenver05/gitart/internal/cli"
@@ -11,32 +10,49 @@ import (
 )
 
 func main() {
-	options := cli.ParseFlagsOrPrompt()
-	grid := app.BuildGrid(options.Message)
-	artRepo := repo.NewNestedRepository(options.ArtPath)
-	scheduler := app.NewScheduler(grid, options.StartDate, options.Target, artRepo)
-
-	if err := scheduler.Generate(); err != nil {
-		fmt.Println("error:", err)
-		os.Exit(1)
+	options, err := cli.ParseFlagsOrPrompt()
+	if err != nil {
+		printErrorAndExit(err)
 	}
 
-	fmt.Println(`
-	Your contribution art has been generated in ./art/
+	grid, err := app.BuildGrid(options.Message)
+	if err != nil {
+		printErrorAndExit(err)
+	}
 
-	To show it on GitHub:
+	repository, err := repo.NewNestedRepository(options.ArtPath)
+	if err != nil {
+		printErrorAndExit(err)
+	}
 
-	1. Create a new GitHub repository
-	2. Set the remote for the local repository
-	3. Push the commits
-	   
-	   gh repo create <your_username>/gitart-` + time.Now().Format("2006-01-02") + ` --public
-	   cd art
-	   git remote add origin <github_repo_url>
-	   git branch -M main
-	   git push -u origin main
-	
-	Your contribution graph will update automatically after pushing!
-	`)
+	scheduler := app.NewScheduler(grid, options.StartDate, options.Target, repository)
+	if err := scheduler.Generate(); err != nil {
+		printErrorAndExit(err)
+	}
 
+	if options.Push {
+		status, err := repository.PushToGitHub(options.Private, !options.NoReset)
+		if err != nil {
+			printErrorAndExit(err)
+		}
+
+		fmt.Println("GitHub push complete")
+		fmt.Println(" repository name:", status.RepositoryName)
+		fmt.Println(" local path:", status.RepositoryPath)
+		fmt.Println(" github user:", status.Username)
+		fmt.Println(" remote url:", status.RemoteURL)
+		fmt.Println(" branch:", status.Branch)
+
+		if status.RepoAlreadyExists {
+			fmt.Println(" note: repository already existed on GitHub")
+		}
+
+		fmt.Println(" Check it out at https://github.com/" + status.Username)
+		return
+	}
+}
+
+func printErrorAndExit(err error) {
+	fmt.Println("error:", err)
+	os.Exit(1)
 }
