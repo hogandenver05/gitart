@@ -20,7 +20,7 @@ func main() {
 		printErrorAndExit(err)
 	}
 
-	repository, err := repo.NewNestedRepository(options.ArtPath)
+	repository, err := repo.NewNestedRepository(options.ArtPath, options.NoCount)
 	if err != nil {
 		printErrorAndExit(err)
 	}
@@ -30,25 +30,23 @@ func main() {
 		printErrorAndExit(err)
 	}
 
+	if err := repository.IncludeREADMEIfPresent(); err != nil {
+		printErrorAndExit(err)
+	}
+
 	if options.Push {
-		status, err := repository.PushToGitHub(options.Private, !options.NoReset)
+		regenerateArtwork := func() error {
+			return scheduler.Generate()
+		}
+		status, err := repository.PushToGitHub(options.Private, !options.NoReset, regenerateArtwork)
 		if err != nil {
 			printErrorAndExit(err)
 		}
 
-		fmt.Println("GitHub push complete")
-		fmt.Println(" repository name:", status.RepositoryName)
-		fmt.Println(" local path:", status.RepositoryPath)
-		fmt.Println(" github user:", status.Username)
-		fmt.Println(" remote url:", status.RemoteURL)
-		fmt.Println(" branch:", status.Branch)
-
-		if status.RepoAlreadyExists {
-			fmt.Println(" note: repository already existed on GitHub")
-		}
-
-		fmt.Println(" Check it out at https://github.com/" + status.Username)
+		fmt.Println(repo.FormatPushStatus(status))
 		return
+	} else {
+		fmt.Println(repo.GenerateInstructions())
 	}
 }
 

@@ -7,6 +7,8 @@ import (
 	"unicode/utf8"
 )
 
+// LoadFont parses a font file and returns a map of runes to their grid representations.
+// Font format: [character] followed by rows of 0s and 1s, separated by blank lines.
 func LoadFont(path string) (map[rune]Grid, error) {
 	file, err := os.Open(path)
 	if err != nil {

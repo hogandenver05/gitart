@@ -4,6 +4,8 @@ import "fmt"
 
 type Grid [][]int
 
+// BuildGrid constructs a grid representation of the message using the default font.
+// Each character is separated by a blank column, and unsupported characters are skipped.
 func BuildGrid(message string) (Grid, error) {
 	const rows = 5
 	grid := make(Grid, rows)

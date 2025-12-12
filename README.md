@@ -22,7 +22,7 @@ cd gitart
 Build
 
 ```
-go build ./cmd/gitart
+go build -o gitart ./cmd/gitart/main.go
 ```
 
 Global install and run
@@ -37,6 +37,65 @@ Or run
 ./gitart
 ```
 
+## Usage
+
+### Basic Usage
+
+Run gitart interactively (will prompt for missing options):
+
+```
+./gitart
+```
+
+Or provide all options via command-line flags:
+
+```
+./gitart -m "HELLO" -s 2025-01-01 -t 1 --push
+```
+
+### Command-Line Flags
+
+- `-m, --message`: Message to display on GitHub contribution graph
+- `-s, --start-date`: Start date in YYYY-MM-DD format (top-left corner of the artwork)
+- `-t, --target`: Target number of commits per day (higher = darker shade of green)
+- `-p, --path`: Path to artwork repository (default: `art`)
+- `--push`: Automatically push commits to GitHub
+- `--private`: Used with `--push` to create a private repository
+- `--no-reset`: Used with `--push` to preserve existing commits and layer messages
+- `--no-count`: Disable contribution counting (use target count regardless of existing contributions)
+
+### Examples
+
+Generate artwork without pushing:
+
+```
+./gitart -m "FOX SPORTS" -s 2024-12-16 -t 1
+```
+
+Generate and automatically push to GitHub:
+
+```
+./gitart -m "HELLO WORLD" -s 2024-01-01 -t 1 --push
+```
+
+Create a private repository:
+
+```
+./gitart -m "HELLO WORLD" -s 2024-01-01 -t 1 --push --private
+```
+
+Layer multiple messages for special effects (preserve existing commits):
+
+```
+./gitart -m "SPECIAL" -s 2024-01-01 -t 1 --push
+./gitart -m "SPECIAL" -s 2024-01-08 -t 1 --push --no-reset
+```
+
+Disable contribution counting (use exact target count):
+
+```
+./gitart -m "HELLO" -s 2024-01-01 -t 5 --push --no-count
+```
 
 ## How it works
 
@@ -47,6 +106,8 @@ Blank pixels remain empty.
 
 The tool creates a nested Git repository dedicated to the artwork.
 Once commits are generated, pushing it to GitHub displays the artwork on your profile.
+
+By default, gitart automatically checks your existing GitHub contributions for each day and adjusts the commit count to ensure the total (existing + new) doesn't exceed your target. This prevents artwork commits from pushing days beyond the desired shade level. Use the `--no-count` flag to disable this behavior and commit the exact target count regardless of existing contributions.
 
 
 ## Requirements

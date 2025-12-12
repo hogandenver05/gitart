@@ -10,12 +10,13 @@ type Options struct {
 	StartDate time.Time
 	Target    int
 	ArtPath   string
-	SubCmd    string
 	Push      bool
 	Private   bool
 	NoReset   bool
+	NoCount   bool
 }
 
+// ParseFlagsOrPrompt parses command-line flags and prompts for any missing required options.
 func ParseFlagsOrPrompt() (*Options, error) {
 	options, err := ParseFlags()
 	if err != nil {

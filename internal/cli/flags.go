@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+// ParseFlags parses command-line flags and returns an Options struct.
+// Dates are normalized to UTC at noon to ensure consistent representation.
 func ParseFlags() (*Options, error) {
 	options := &Options{}
 
@@ -17,16 +19,18 @@ func ParseFlags() (*Options, error) {
 	flag.BoolVar(&options.Push, "push", false, "Automatically push commits to GitHub")
 	flag.BoolVar(&options.Private, "private", false, "Used with --push to set repository visibility to private")
 	flag.BoolVar(&options.NoReset, "no-reset", false, "Used with --push to avoid resetting the repository")
+	flag.BoolVar(&options.NoCount, "no-count", false, "Disable contribution counting (use target count regardless of existing contributions)")
 
 	flag.Parse()
 
 	if startDateString != "" {
-		startDate, err := time.Parse("2006-01-02", startDateString)
+		parsedDate, err := time.Parse("2006-01-02", startDateString)
 		if err != nil {
 			return nil, fmt.Errorf("invalid start date format, use YYYY-MM-DD")
 		}
 		
-		options.StartDate = startDate
+		year, month, day := parsedDate.UTC().Date()
+		options.StartDate = time.Date(year, month, day, 12, 0, 0, 0, time.UTC)
 	}
 
 	return options, nil
