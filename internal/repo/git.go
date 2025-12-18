@@ -22,10 +22,10 @@ func NewNestedRepository(path string, enableCounting bool) (*NestedRepository, e
 	}
 
 	repository := &NestedRepository{
-		Path:            path,
+		Path:           path,
 		EnableCounting: enableCounting,
 	}
-	
+
 	gitPath := filepath.Join(path, ".git")
 	if _, err := os.Stat(gitPath); os.IsNotExist(err) {
 		if err := repository.ResetRepository(); err != nil {
@@ -41,24 +41,24 @@ func NewNestedRepository(path string, enableCounting bool) (*NestedRepository, e
 // The commit count is adjusted based on existing contributions to avoid exceeding the target, unless counting is disabled.
 func (repository *NestedRepository) CommitDay(day time.Time, count int) error {
 	commitsToMake := count
-	
+
 	if repository.EnableCounting {
 		existingContributions, err := GetContributionCount(day)
 		if err != nil {
 			return fmt.Errorf("failed to get contribution count for %s: %v", day.Format("2006-01-02"), err)
 		}
-		
+
 		commitsToMake = max(count - existingContributions, 0)
-		
+
 		if commitsToMake == 0 {
 			return nil
 		}
 	}
-	
+
 	utcDay := day.UTC()
 	year, month, date := utcDay.Date()
 	normalizedDay := time.Date(year, month, date, 12, 0, 0, 0, time.UTC)
-	
+
 	for range commitsToMake {
 		dateString := normalizedDay.Format("2006-01-02T15:04:05Z")
 		env := append(os.Environ(),
@@ -66,7 +66,8 @@ func (repository *NestedRepository) CommitDay(day time.Time, count int) error {
 			"GIT_COMMITTER_DATE="+dateString,
 		)
 
-		cmd := exec.Command("git", "commit", "--allow-empty", "-m", fmt.Sprintf("pixel %s", dateString))
+		commitMessageDateString := normalizedDay.Format("2006-01-02")
+		cmd := exec.Command("git", "commit", "--allow-empty", "-m", fmt.Sprintf("pixel %s", commitMessageDateString))
 		cmd.Dir = repository.Path
 		cmd.Env = env
 		if err := cmd.Run(); err != nil {
@@ -82,7 +83,7 @@ func (repository *NestedRepository) CommitDay(day time.Time, count int) error {
 // that use historical dates for the contribution graph pattern.
 func (repository *NestedRepository) IncludeREADMEIfPresent() error {
 	readmePath := filepath.Join(repository.Path, "README.md")
-	
+
 	if _, err := os.Stat(readmePath); os.IsNotExist(err) {
 		return nil
 	}
