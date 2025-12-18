@@ -1,34 +1,41 @@
 package app
 
-import "fmt"
+import "github.com/hogandenver05/gitart/internal/fonts"
 
 type Grid [][]int
 
-// BuildGrid constructs a grid representation of the message using the default font.
-// Each character is separated by a blank column, and unsupported characters are skipped.
+const gridRows = 5
+
+// BuildGrid constructs a grid representation of the message using the predefined font map.
+// Unsupported characters are skipped. Each rendered character is followed by a blank column.
 func BuildGrid(message string) (Grid, error) {
-	const rows = 5
-	grid := make(Grid, rows)
-	for i := range rows {
-		grid[i] = make([]int, 0)
-	}
+	grid := newEmptyGrid(gridRows)
 
-	font, err := LoadFont("internal/app/default-font")
-	if err != nil {
-		return nil, fmt.Errorf("failed to load font: %w", err)
-	}
-
-	for _, ch := range message {
-		pattern, ok := font[ch]
-		if !ok {
+	for _, r := range message {
+		pattern, exists := fonts.DefaultFontMap[r]
+		if !exists {
 			continue
 		}
 
-		for r := range rows {
-			grid[r] = append(grid[r], pattern[r]...)
-			grid[r] = append(grid[r], 0)
-		}
+		appendPattern(grid, pattern)
 	}
 
 	return grid, nil
+}
+
+func newEmptyGrid(rows int) Grid {
+	grid := make(Grid, rows)
+	for i := range grid {
+		grid[i] = []int{}
+	}
+	return grid
+}
+
+func appendPattern(grid Grid, pattern [][]int) {
+	for rowIndex := range grid {
+		if rowIndex < len(pattern) {
+			grid[rowIndex] = append(grid[rowIndex], pattern[rowIndex]...)
+		}
+		grid[rowIndex] = append(grid[rowIndex], 0)
+	}
 }
