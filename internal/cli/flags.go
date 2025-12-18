@@ -19,7 +19,7 @@ func ParseFlags() (*Options, error) {
 	flag.BoolVar(&options.Push, "push", false, "Automatically push commits to GitHub")
 	flag.BoolVar(&options.Private, "private", false, "Used with --push to set repository visibility to private")
 	flag.BoolVar(&options.NoReset, "no-reset", false, "Used with --push to avoid resetting the repository")
-	flag.BoolVar(&options.NoCount, "no-count", false, "Disable contribution counting (use target count regardless of existing contributions)")
+	flag.BoolVar(&options.Count, "count", false, "Enable contribution counting (limit commits to target count by counting existing contributions)")
 
 	flag.Parse()
 

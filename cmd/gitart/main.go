@@ -20,7 +20,7 @@ func main() {
 		printErrorAndExit(err)
 	}
 
-	repository, err := repo.NewNestedRepository(options.ArtPath, options.NoCount)
+	repository, err := repo.NewNestedRepository(options.ArtPath, options.Count)
 	if err != nil {
 		printErrorAndExit(err)
 	}

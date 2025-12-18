@@ -11,19 +11,19 @@ import (
 
 type NestedRepository struct {
 	Path           string
-	DisableCounting bool
+	EnableCounting bool
 }
 
 // NewNestedRepository creates a new repository at the specified path.
 // Only initializes git if the repository doesn't exist, preserving existing commits when using --no-reset.
-func NewNestedRepository(path string, disableCounting bool) (*NestedRepository, error) {
+func NewNestedRepository(path string, enableCounting bool) (*NestedRepository, error) {
 	if err := os.MkdirAll(path, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create directory %s: %w", path, err)
 	}
 
 	repository := &NestedRepository{
 		Path:            path,
-		DisableCounting: disableCounting,
+		EnableCounting: enableCounting,
 	}
 	
 	gitPath := filepath.Join(path, ".git")
@@ -42,17 +42,13 @@ func NewNestedRepository(path string, disableCounting bool) (*NestedRepository, 
 func (repository *NestedRepository) CommitDay(day time.Time, count int) error {
 	commitsToMake := count
 	
-	if !repository.DisableCounting {
+	if repository.EnableCounting {
 		existingContributions, err := GetContributionCount(day)
 		if err != nil {
-			fmt.Printf("warning: failed to get contribution count for %s: %v, proceeding with original count\n", day.Format("2006-01-02"), err)
-			existingContributions = 0
+			return fmt.Errorf("failed to get contribution count for %s: %v", day.Format("2006-01-02"), err)
 		}
 		
-		commitsToMake = count - existingContributions
-		if commitsToMake < 0 {
-			commitsToMake = 0
-		}
+		commitsToMake = max(count - existingContributions, 0)
 		
 		if commitsToMake == 0 {
 			return nil

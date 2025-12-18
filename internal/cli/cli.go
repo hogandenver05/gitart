@@ -13,7 +13,7 @@ type Options struct {
 	Push      bool
 	Private   bool
 	NoReset   bool
-	NoCount   bool
+	Count   bool
 }
 
 // ParseFlagsOrPrompt parses command-line flags and prompts for any missing required options.
