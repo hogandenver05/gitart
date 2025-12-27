@@ -1,0 +1,8 @@
+Package: gitart
+Version: 1.0.0
+Section: utils
+Priority: optional
+Architecture: amd64
+Depends: libc6 (>= 2.28)
+Maintainer: Denver Hogan <hogandenver05@gmail.com>
+Description: Gitart is a command line tool that creates custom artwork on your GitHub contribution graph. You provide a message and the tool generates a series of commits inside a nested repository so the design appears on your profile.

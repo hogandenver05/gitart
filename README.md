@@ -6,121 +6,180 @@
 
 Gitart is a command line tool that creates custom artwork on your GitHub contribution graph. You provide a message and the tool generates a series of commits inside a nested repository so the design appears on your profile.
 
+---
+
 ## Features
 
-• Create text based artwork with a compact three by five pixel font  
-• Choose your starting date and target number of commits for darkest color  
-• Create a nested repository for artwork  
-• Automatically generate empty commits that show up on your GitHub graph  
+• Create text-based artwork using a compact 3×5 pixel font  
+• Choose a starting date and target number of commits for the darkest shade  
+• Create a dedicated nested repository for artwork  
+• Automatically generate empty commits that appear on your GitHub graph  
+
+---
 
 ## Installation
 
-Clone the repository
+### Debian / Ubuntu (recommended)
 
+Download the `.deb` from the GitHub Releases page:
+
+https://github.com/hogandenver05/gitart/releases
+
+Install it:
+
+```bash
+sudo dpkg -i gitart_<version>_amd64.deb
+sudo apt -f install
 ```
+
+Run:
+
+```bash
+gitart
+```
+
+---
+
+### From source (development)
+
+Clone the repository:
+
+```bash
 git clone https://github.com/hogandenver05/gitart
 cd gitart
 ```
 
-Build
+Build:
 
-```
-go build -o gitart ./cmd/gitart/main.go
+```bash
+go build -o gitart ./cmd/gitart
 ```
 
-Global install and run
+Run locally:
+
+```bash
+./gitart
 ```
+
+Optional global install:
+
+```bash
 sudo mv gitart /usr/local/bin
 gitart
 ```
 
-Or run
-
-```
-./gitart
-```
+---
 
 ## Usage
 
-### Basic Usage
+### Basic usage
 
-Run gitart interactively (will prompt for missing options):
+Run interactively (prompts for missing options):
 
-```
-./gitart
-```
-
-Or provide all options via command-line flags:
-
-```
-./gitart -m "HELLO" -s 2025-01-01 -t 1 --push
+```bash
+gitart
 ```
 
-### Command-Line Flags
+Provide all options via flags:
 
-- `-m, --message`: Message to display on GitHub contribution graph
-- `-s, --start-date`: Start date in YYYY-MM-DD format (top-left corner of the artwork)
-- `-t, --target`: Target number of commits per day (higher = darker shade of green)
-- `-p, --path`: Path to artwork repository (default: `art`)
-- `--push`: Automatically push commits to GitHub
-- `--private`: Used with `--push` to create a private repository
-- `--no-reset`: Used with `--push` to preserve existing commits and layer messages
-- `--no-count`: Disable contribution counting (use target count regardless of existing contributions)
+```bash
+gitart -m "HELLO" -s 2025-01-01 -t 1 --push
+```
+
+---
+
+### Command-line flags
+
+- `-m, --message`  
+  Message to display on the GitHub contribution graph
+
+- `-s, --start-date`  
+  Start date in `YYYY-MM-DD` format (top-left corner of the artwork)
+
+- `-t, --target`  
+  Target number of commits per day (higher = darker shade)
+
+- `-p, --path`  
+  Path to the artwork repository (default: `art`)
+
+- `--push`  
+  Automatically push commits to GitHub
+
+- `--private`  
+  Used with `--push` to create a private repository
+
+- `--no-reset`  
+  Used with `--push` to preserve existing commits and layer messages
+
+- `--no-count`  
+  Disable contribution counting and always commit the exact target count
+
+---
 
 ### Examples
 
 Generate artwork without pushing:
 
-```
-./gitart -m "FOX SPORTS" -s 2024-12-16 -t 1
+```bash
+gitart -m "FOX SPORTS" -s 2024-12-16 -t 1
 ```
 
-Generate and automatically push to GitHub:
+Generate and push to GitHub:
 
-```
-./gitart -m "HELLO WORLD" -s 2024-01-01 -t 1 --push
+```bash
+gitart -m "HELLO WORLD" -s 2024-01-01 -t 1 --push
 ```
 
 Create a private repository:
 
-```
-./gitart -m "HELLO WORLD" -s 2024-01-01 -t 1 --push --private
-```
-
-Layer multiple messages for special effects (preserve existing commits):
-
-```
-./gitart -m "SPECIAL" -s 2024-01-01 -t 1 --push
-./gitart -m "SPECIAL" -s 2024-01-08 -t 1 --push --no-reset
+```bash
+gitart -m "HELLO WORLD" -s 2024-01-01 -t 1 --push --private
 ```
 
-Disable contribution counting (use exact target count):
+Layer messages for special effects:
 
+```bash
+gitart -m "SPECIAL" -s 2024-01-01 -t 1 --push
+gitart -m "SPECIAL" -s 2024-01-08 -t 1 --push --no-reset
 ```
-./gitart -m "HELLO" -s 2024-01-01 -t 5 --push --no-count
+
+Disable contribution counting:
+
+```bash
+gitart -m "HELLO" -s 2024-01-01 -t 5 --push --no-count
 ```
+
+---
 
 ## How it works
 
-Gitart renders your message using a small three by five font.
-Each pixel represents a day on the contribution graph.
-Filled pixels produce commits.
+Gitart renders your message using a small 3×5 font.  
+Each pixel represents a day on the GitHub contribution graph.
+
+Filled pixels generate commits.  
 Blank pixels remain empty.
 
-The tool creates a nested Git repository dedicated to the artwork.
-Once commits are generated, pushing it to GitHub displays the artwork on your profile.
+The tool creates a nested Git repository dedicated to the artwork.  
+Once commits are generated, pushing the repository causes the artwork to appear on your GitHub profile.
 
-By default, gitart automatically checks your existing GitHub contributions for each day and adjusts the commit count to ensure the total (existing + new) doesn't exceed your target. This prevents artwork commits from pushing days beyond the desired shade level. Use the `--no-count` flag to disable this behavior and commit the exact target count regardless of existing contributions.
+By default, gitart checks your existing contributions for each day and adjusts the number of new commits so the total does not exceed the target shade.  
+Use `--no-count` to disable this behavior.
 
+---
 
 ## Requirements
 
-• Go version 1.21 or later  
+• Go 1.21 or later (for building from source)  
 • Git  
+
+---
 
 ## Contributing
 
-Pull requests are welcome. Please follow the existing project structure.
+Pull requests are welcome.  
+Please follow the existing project structure and keep Go source separate from packaging artifacts.
+
+---
 
 ## License
 
